@@ -1,0 +1,78 @@
+.background {
+    margin-top: 30px;
+}
+
+.name-flex {
+    display: grid;
+    grid-template-columns: 50px 0.75fr;
+    align-items: center;
+    justify-content: center;  
+    margin-left: -12px;
+    column-gap: 40px;
+
+}
+
+p {
+    font-size: 14px;
+}
+
+.name,
+.style,
+.end-button {
+    font-weight: 600;
+}
+
+.age {
+    margin-top: -12px;
+}
+
+.patient-bg {
+    text-align: justify;
+    margin-bottom: 20px;
+}
+
+.patient-details,
+.log {
+    padding: 10px 40px;
+}
+
+.end-button {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    border-style: none;
+    border: 1px solid;
+    border-radius: 40px;
+    width: 250px;
+    margin-bottom: 20px;
+    
+}
+
+.button-div {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    margin-top: 40px;
+    
+    
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 2px solid black /* Add border to the table */
+}
+
+thead {
+    border-bottom: 1px solid black;
+
+}
+th, td {
+    /* border: 1px solid ; */
+    padding: 8px;
+    text-align: left;
+}
+th {
+    /* background-color: #f2f2f2; */
+}
