@@ -2,16 +2,12 @@ import cv2
 from model import FacialExpressionModel
 import numpy as np
 import pickle
-from emotion_mapping import emotion_to_vac
+from emotion_mapping import emotion_to_valence_arousal
 
 facec = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
 model = FacialExpressionModel("model.json", "model_weights.h5")
 font = cv2.FONT_HERSHEY_SIMPLEX
 
-# Load the mapping
-with open('emotion_to_vac.pkl', 'rb') as f:
-    emotion_to_vac = pickle.load(f)
-    
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)  # 0 means the default webcam
@@ -30,7 +26,7 @@ class VideoCamera(object):
             # Get the emotion with the highest probability
             emotion = FacialExpressionModel.EMOTIONS_LIST[np.argmax(preds)]
             emotion = emotion.title()  # convert to title case
-            valence, arousal = emotion_to_vac[emotion]
+            valence, arousal = emotion_to_valence_arousal[emotion]
 
             # Display the emotion, valence, and arousal on the frame
             cv2.putText(fr, emotion, (x, y - 10), font, 1, (255, 255, 0), 2)
