@@ -27,15 +27,12 @@ class VideoCamera(object):
 
             roi = cv2.resize(fc, (48, 48))
             roi_rgb = np.repeat(roi[..., np.newaxis], 3, -1)
+            
             preds = model.predict_emotion(roi_rgb[np.newaxis, ...])[0]
-
-            # Print out the predictions
-            print("Predictions:", preds)
 
             # Get the emotion with the highest probability
             emotion = FacialExpressionModel.EMOTIONS_LIST[np.argmax(preds)]
-            # emotion = emotion.title()  # remove or comment out this line
-            valence, arousal = emotion_to_valence_arousal[emotion]
+            valence, arousal = preds  # use the raw predictions as valence-arousal coordinates
 
             # Display the emotion, valence, and arousal on the frame
             cv2.putText(fr, f'Valence: {valence:.2f}', (x, y + h + 20), font, 1, (255, 255, 0), 2)

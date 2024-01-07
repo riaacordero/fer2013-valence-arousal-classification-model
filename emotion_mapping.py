@@ -7,3 +7,9 @@ emotion_to_valence_arousal = {
     'sad': (-0.8, -0.6),
     'surprise': (0.6, 0.8)
 }
+
+# Define the value range
+min_valence = -1.0
+max_valence = 1.0
+min_arousal = -1.0
+max_arousal = 1.0
