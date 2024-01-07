@@ -15,7 +15,7 @@ with open('emotion_to_vac.pkl', 'rb') as f:
 class VideoCamera(object):
     def __init__(self):
         # self.video = cv2.VideoCapture(0)  # 0 means the default webcam
-        self.video = cv2.VideoCapture('test_video/bbc_news.mp4')  # replace 'your_video_file.mp4' with your file name
+        self.video = cv2.VideoCapture('test_video/bbc_news.mp4')  # 0 means the default webcam
 
     def get_frame(self):
         _, fr = self.video.read()
@@ -23,16 +23,23 @@ class VideoCamera(object):
         faces = facec.detectMultiScale(gray_fr, 1.3, 5)
 
         for (x, y, w, h) in faces:
+            # Extract the ROI of the face from the grayscale image, resize it to 48x48, and then prepare
             fc = gray_fr[y:y+h, x:x+w]
 
+            # Resize the image to 48x48 for the model
             roi = cv2.resize(fc, (48, 48))
-            roi_rgb = np.repeat(roi[..., np.newaxis], 3, -1)
-            
-            preds = model.predict_emotion(roi_rgb[np.newaxis, ...])[0]
 
-            # Get the emotion with the highest probability
-            emotion = FacialExpressionModel.EMOTIONS_LIST[np.argmax(preds)]
-            valence, arousal = preds  # use the raw predictions as valence-arousal coordinates
+            # Convert the image to RGB
+            roi = cv2.cvtColor(roi, cv2.COLOR_GRAY2RGB)
+
+            # Normalize the ROI (convert to float and divide by 255.0)
+            roi = roi.astype("float") / 255.0
+            
+            # Expand the dimensions to match the input shape of the model (1, 48, 48, 3)
+            roi = np.expand_dims(roi, axis=0)
+
+            # Predict valence and arousal
+            valence, arousal = model.predict_emotion(roi)
 
             # Display the emotion, valence, and arousal on the frame
             cv2.putText(fr, f'Valence: {valence:.2f}', (x, y + h + 20), font, 1, (255, 255, 0), 2)

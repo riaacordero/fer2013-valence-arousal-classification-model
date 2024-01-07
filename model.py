@@ -18,13 +18,5 @@ class FacialExpressionModel(object):
         self.loaded_model.make_predict_function()
         
     def predict_emotion(self, img):
-        self.preds = self.loaded_model.predict(img)
-        return self.preds  # return raw predictions
-
-    # def plot_emotions(self, img):
-    #     preds = self.predict_emotion(img)
-    #     fig, ax = plt.subplots()
-    #     ax.scatter(range(len(self.EMOTIONS_LIST)), preds)
-    #     ax.set_xticks(range(len(self.EMOTIONS_LIST)))
-    #     ax.set_xticklabels(self.EMOTIONS_LIST)
-    #     plt.show()
+        preds = self.loaded_model.predict(img)
+        return preds[0]  # returns (valence, arousal)
