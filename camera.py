@@ -8,9 +8,14 @@ facec = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml'
 model = FacialExpressionModel("model.json", "model_weights.h5")
 font = cv2.FONT_HERSHEY_SIMPLEX
 
+# Load the mapping
+with open('emotion_to_vac.pkl', 'rb') as f:
+    emotion_to_valence_arousal = pickle.load(f)
+    
 class VideoCamera(object):
     def __init__(self):
-        self.video = cv2.VideoCapture(0)  # 0 means the default webcam
+        # self.video = cv2.VideoCapture(0)  # 0 means the default webcam
+        self.video = cv2.VideoCapture('test_video/bbc_news.mp4')  # replace 'your_video_file.mp4' with your file name
 
     def get_frame(self):
         _, fr = self.video.read()
@@ -21,15 +26,18 @@ class VideoCamera(object):
             fc = gray_fr[y:y+h, x:x+w]
 
             roi = cv2.resize(fc, (48, 48))
-            preds = model.predict_emotion(roi[np.newaxis, :, :, np.newaxis])[0]  # get probabilities of the first sample
+            roi_rgb = np.repeat(roi[..., np.newaxis], 3, -1)
+            preds = model.predict_emotion(roi_rgb[np.newaxis, ...])[0]
+
+            # Print out the predictions
+            print("Predictions:", preds)
 
             # Get the emotion with the highest probability
             emotion = FacialExpressionModel.EMOTIONS_LIST[np.argmax(preds)]
-            emotion = emotion.title()  # convert to title case
+            # emotion = emotion.title()  # remove or comment out this line
             valence, arousal = emotion_to_valence_arousal[emotion]
 
             # Display the emotion, valence, and arousal on the frame
-            cv2.putText(fr, emotion, (x, y - 10), font, 1, (255, 255, 0), 2)
             cv2.putText(fr, f'Valence: {valence:.2f}', (x, y + h + 20), font, 1, (255, 255, 0), 2)
             cv2.putText(fr, f'Arousal: {arousal:.2f}', (x + w + 10, y + h // 2), font, 1, (255, 255, 0), 2)
 

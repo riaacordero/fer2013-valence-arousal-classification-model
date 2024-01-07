@@ -1,11 +1,13 @@
 from keras.models import model_from_json
+
 import numpy as np
 import tensorflow as tf
+from tensorflow import keras as keras
 
 import matplotlib.pyplot as plt
 
 class FacialExpressionModel(object):
-    EMOTIONS_LIST = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
+    EMOTIONS_LIST = ["angry", "disgust", "fear", "happy", "sad",  "neutral", "surprise"]
 
     def __init__(self, model_json_file, model_weights_file):
         with open(model_json_file, "r") as json_file:
@@ -17,7 +19,7 @@ class FacialExpressionModel(object):
 
     def predict_emotion(self, img):
         self.preds = self.loaded_model.predict(img)
-        return self.preds  # return probabilities
+        return FacialExpressionModel.EMOTIONS_LIST[np.argmax(self.preds)]
 
     def plot_emotions(self, img):
         preds = self.predict_emotion(img)
