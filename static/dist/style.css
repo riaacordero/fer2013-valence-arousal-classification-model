@@ -1,1 +1,144 @@
-/*# sourceMappingURL=style.css.map */
+html {
+  box-sizing: border-box;
+  font-size: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 3em 4em;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  font-size: 1em;
+}
+
+p {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+a {
+  color: black;
+  font-size: 1.2rem;
+}
+
+a,
+a:visited,
+a:active,
+nav {
+  text-decoration: none;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+.container h2 {
+  font-size: 1.563rem;
+  font-weight: 700;
+}
+.container h6 {
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+.container button {
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(45deg, rgb(4, 220, 91) 0%, rgb(6, 221, 169) 100%);
+  color: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  padding: 12px 30px;
+  font-family: "Poppins", sans-serif;
+  -moz-column-gap: 5px;
+       column-gap: 5px;
+}
+.container__flex-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F4F4F4;
+  border-radius: 10px;
+  padding: 10px 20px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  -moz-column-gap: 3rem;
+       column-gap: 3rem;
+  margin-top: 1em;
+}
+
+.container__right hr {
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+.container__right .right-intro {
+  font-size: 1.125rem;
+  margin-bottom: 5px;
+}
+.container__right p, .container__right .list-style {
+  font-size: 0.75rem;
+}
+.container__right p {
+  text-align: justify;
+  font-family: "Inter", sans-serif;
+}
+.container__right .list-style {
+  display: flex;
+  -moz-column-gap: 80px;
+       column-gap: 80px;
+  margin-left: 20px;
+  margin-top: 10px;
+}
+.container__right li {
+  margin-bottom: 8px;
+}
+
+.container__third .table-container {
+  border-radius: 10px;
+  border: 1px solid #cdcdcd;
+  max-height: 250px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.container__third table {
+  font-size: 0.75rem;
+  font-family: "Inter", sans-serif;
+  border-spacing: 20px;
+  padding: 0 10px;
+}
+.container__third .download-copy {
+  width: 100%;
+}
+
+.container__webcam {
+  margin-top: 14px;
+  border-radius: 10px;
+  box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.3);
+}
+.container__webcam .img-size {
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 5em;
+}/*# sourceMappingURL=style.css.map */

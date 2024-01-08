@@ -1,0 +1,44 @@
+@use '../util' as u;
+
+.container {
+    h2 {
+        font-size: u.$standard-h2;
+        font-weight: 700;
+    }
+    
+    h6 {
+        font-weight: 400;
+        font-size: u.$standard-small;
+
+    }
+
+    button {
+        border: none;
+        border-radius: 10px;
+        background: u.$button-gradient;
+        color: white;
+        cursor: pointer;
+        font-size: u.$standard-medium;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        padding: 12px 30px;
+        font-family: u.$font-poppins;
+        column-gap: 5px;
+
+    }
+
+
+    &__flex-intro {
+        display: flex;
+        // background-color: aqua;
+        align-items: center;
+        justify-content: space-between;
+        background-color: u.$second-bg;
+        border-radius: 10px;
+        padding: 10px 20px;
+        
+        
+    }
+}
