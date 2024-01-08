@@ -1,0 +1,23 @@
+@use '../util' as u;
+
+html {
+    box-sizing: border-box;
+    font-size: 100%;
+}
+
+*, 
+*::before, 
+*::after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 3em 4em;
+    padding: 0;
+    font-family: u.$font-poppins;
+    // overflow-x: hidden;
+    // background-color: var(--background-color);
+    // color: var(--text-color);
+    
+}
+
