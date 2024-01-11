@@ -1,8 +1,11 @@
+# camera.py
+
 import cv2
 from model import FacialExpressionModel
 import numpy as np
 import pickle
 from emotion_mapping import emotion_to_valence_arousal
+from panic_attack import classify_panic_attack
 
 facec = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
 model = FacialExpressionModel("model.json", "model_weights.h5")
@@ -15,7 +18,7 @@ with open('emotion_to_vac.pkl', 'rb') as f:
 class VideoCamera(object):
     def __init__(self):
         # self.video = cv2.VideoCapture(0)  # 0 means the default webcam
-        self.video = cv2.VideoCapture('test_files/test_video/horrorweb.mp4')  # 0 means the default webcam
+        self.video = cv2.VideoCapture('test_files/test_video/bbc_news.mp4')  # 0 means the default webcam
 
     def __del__(self):
         self.video.release()
@@ -23,8 +26,13 @@ class VideoCamera(object):
     def get_frame(self):
         success, frame = self.video.read()
         if not success:
-            print("Could not read frame from video source")
-            return None
+            print("Could not read frame from the video source")
+            # Restart the video when it ends
+            self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            success, frame = self.video.read()
+            if not success:
+                print("Could not read frame from the video source after trying to restart")
+                return None
 
         gray_fr = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = facec.detectMultiScale(gray_fr, 1.3, 5)
@@ -54,6 +62,9 @@ class VideoCamera(object):
 
             # Draw bounding box
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+            # Classify panic attack based on valence and arousal
+            classify_panic_attack(valence, arousal)
 
         _, jpeg = cv2.imencode('.jpg', frame)
         return jpeg.tobytes()
