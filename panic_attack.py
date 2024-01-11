@@ -1,6 +1,5 @@
-# panicattack.py
-
 import time
+from flask import jsonify
 
 # Initialize panic attack variables
 recurrence_count = 0
@@ -23,14 +22,22 @@ def classify_panic_attack(valence, arousal):
     # Check if recurrence count reaches 5
     if recurrence_count == 5:
         is_panic_attack = True
-        print("Panic attack precursor detected!")
+        timestamp = time.strftime("%H:%M:%S", time.localtime())
+        update_html_content(timestamp, "Panic attack precursor detected!")
 
     # Check if recurrence count is beyond 5
     elif recurrence_count > 5:
-        print("Potential panic attack emotion is recurring. You might want to take action")
+        timestamp = time.strftime("%H:%M:%S", time.localtime())
+        update_html_content(timestamp, "Potential panic attack emotion is recurring. You might want to take action")
 
     # Check if the emotion hasn't changed for 1 minute and 30 seconds
     current_time = time.time()
     if current_time - last_emotion_time >= 90:  # Check every 1 minute and 30 seconds
-        print("Potential panic attack emotion is not changing. You might want to take action.")
+        timestamp = time.strftime("%H:%M:%S", time.localtime())
+        update_html_content(timestamp, "Potential panic attack emotion is not changing. You might want to take action.")
         last_emotion_time = current_time
+
+def update_html_content(timestamp, message):
+    # Add the timestamp and message to the HTML table
+    update_data = {'timestamp': timestamp, 'message': message}
+    return jsonify(update_data)
