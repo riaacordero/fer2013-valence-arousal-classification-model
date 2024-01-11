@@ -1,6 +1,7 @@
 from flask import Flask, render_template, Response, jsonify, request
-from camera import VideoCamera
+from camera import analyze_frame
 from panic_attack import classify_panic_attack, update_html_content
+import cv2
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -8,15 +9,21 @@ app = Flask(__name__, static_url_path='/static')
 def index():
     return render_template('index.html')
 
-def gen(camera):
-    while True:
-        frame = camera.get_frame()
+def gen(video: cv2.VideoCapture):
+    """Video streaming generator function."""
+    for frame, valence, arousal in analyze_frame(video):
+        # Classify panic attack based on valence and arousal
+        panic_result = classify_panic_attack(valence, arousal)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        
+    # Once the video ends, release the video capture
+    video.release()
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen(VideoCamera()),
+    video = cv2.VideoCapture('test_files/test_video/bbc_news.mp4')  # 0 means the default webcam
+    return Response(gen(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/update-content', methods=['POST'])
