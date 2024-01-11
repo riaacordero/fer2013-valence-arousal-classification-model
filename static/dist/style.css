@@ -127,6 +127,10 @@ ul {
   font-family: "Inter", sans-serif;
   border-spacing: 20px;
   padding: 0 10px;
+  cursor: pointer;
+}
+.container__third table tr:hover {
+  background-color: #EFEFEF;
 }
 .container__third .download-copy {
   width: 100%;

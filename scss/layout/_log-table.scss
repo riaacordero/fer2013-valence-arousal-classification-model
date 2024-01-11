@@ -17,6 +17,11 @@
             font-family: u.$font-inter;
             border-spacing: 20px;
             padding: 0 10px;
+            cursor: pointer;
+
+            tr:hover {
+                background-color: #EFEFEF;  
+            }
         }
 
         .download-copy {
