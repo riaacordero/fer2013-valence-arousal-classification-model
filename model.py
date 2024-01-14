@@ -1,10 +1,5 @@
-from keras.models import model_from_json
-
-import numpy as np
-import tensorflow as tf
 from tensorflow import keras as keras
-
-import matplotlib.pyplot as plt
+from keras.models import model_from_json
 
 class FacialExpressionModel(object):
     EMOTIONS_LIST = ["angry", "disgust", "fear", "happy", "sad",  "neutral", "surprise"]
@@ -16,7 +11,7 @@ class FacialExpressionModel(object):
 
         self.loaded_model.load_weights(model_weights_file)
         self.loaded_model.make_predict_function()
-        
+
     def predict_emotion(self, img):
         preds = self.loaded_model.predict(img)
         return preds[0]  # returns (valence, arousal)

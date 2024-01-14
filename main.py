@@ -1,36 +1,103 @@
-from flask import Flask, render_template, Response, jsonify, request
-from camera import analyze_frame
-from panic_attack import classify_panic_attack, update_html_content
+import uvicorn
+from fastapi import FastAPI, Request, WebSocket
+from fastapi.responses import HTMLResponse
+from starlette.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from camera import detect_face, predict_from_img
+from time import strftime, localtime
+import asyncio
+import base64
+import numpy as np
 import cv2
 
-app = Flask(__name__, static_url_path='/static')
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/test_files", StaticFiles(directory="test_files"), name="test_files")
 
-def gen(video: cv2.VideoCapture):
-    """Video streaming generator function."""
-    for frame, valence, arousal in analyze_frame(video):
-        # Classify panic attack based on valence and arousal
-        panic_result = classify_panic_attack(valence, arousal)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-        
-    # Once the video ends, release the video capture
-    video.release()
+templates = Jinja2Templates(directory="templates")
 
-@app.route('/video_feed')
-def video_feed():
-    video = cv2.VideoCapture('test_files/test_video/bbc_news.mp4')  # 0 means the default webcam
-    return Response(gen(video),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.get('/', response_class=HTMLResponse)
+async def index(request: Request):
+    source = request.query_params.get('source', '0')
+    # play a file from /test_files/test_video/bbc_news.mp4
+    # http://localhost:3000/?source=/test_files/test_video/bbc_news.mp4
+    # or use the webcam (0)
+    # http://localhost:3000/?source=0 (default)
+    print(source)
+    return templates.TemplateResponse(
+        request=request, name='index.html', context={'source': source}
+    )
 
-@app.route('/update-content', methods=['POST'])
-def update_content():
-    timestamp = request.form['timestamp']
-    message = request.form['message']
-    return update_html_content(timestamp, message)
+async def analyze(websocket: WebSocket, command: str, params: dict):
+    decoded_img = base64.b64decode(params.get('image').split(',')[1])
+    img_arr = np.frombuffer(decoded_img, dtype=np.uint8)
+    img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+    has_results = False
+
+    for face, x, y, w, h in detect_face(img):
+        has_results = True
+        valence, arousal, result = predict_from_img(face)
+        await websocket.send_json({
+            'command': command,
+            'result': {
+                'timestamp': strftime("%H:%M:%S", localtime()),
+                'valence': valence.item(),
+                'arousal': arousal.item(),
+                'result': result,
+                'bbox': [int(x), int(y), int(w), int(h)]
+            }
+        })
+
+    if not has_results:
+        await websocket.send_json({
+            'command': command,
+            'result': {
+                'timestamp': strftime("%H:%M:%S", localtime()),
+                'valence': 0,
+                'arousal': 0,
+                'bbox': [0,0,0,0]
+            }
+        })
+
+@app.websocket('/session')
+async def session(websocket: WebSocket):
+    await websocket.accept()
+
+    analyze_task = None
+
+    while True:
+        data = await websocket.receive_json()
+        if type(data) != dict:
+            await websocket.send_json({'type': 'error', 'message': 'Invalid data'})
+            continue
+
+        command = data.get('command')
+        params = data.get('params')
+
+        match command:
+            case 'analyze':
+                try:
+                    if analyze_task is not None and not analyze_task.done():
+                        analyze_task.cancel()
+
+                    analyze_task = asyncio.create_task(analyze(websocket, command, params))
+                    await analyze_task
+                except asyncio.CancelledError:
+                    await websocket.send_json({'type': 'info', 'message': 'Analysis cancelled'})
+            case 'close':
+                await websocket.send_json({'type': 'info', 'message': 'Closing connection'})
+                await websocket.close()
+            case _:
+                await websocket.send_json({'type': 'error', 'message': 'Invalid command'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    uvicorn.run(app, host='0.0.0.0', port=3000)

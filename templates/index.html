@@ -29,10 +29,11 @@
             Upload Video
           </button>
         </div>
-        <div class="container__webcam">
-          <img id="bg" class="img-size" src="{{ url_for('video_feed') }}">
+
+        <div class="container__webcam" style="position: relative">
+          <canvas style="position:absolute;top:0;left:0" id="rect" class="img-size" width="848" height="480"></canvas>
+          <canvas id="video" class="img-size" width="848" height="480"></canvas>
         </div>
-        
       </section>
 
       <section class="container__right">
@@ -57,22 +58,15 @@
               <li>Angry: (-0.8, 0.8),</li>
               <li>Fear: (0.0, 0.8)</li>
             </div>
-            
-          </ul>  
+          </ul>
         </div>
-        <hr>  
+        <hr>
 
         <div class="container__third">
           <h2 class="right-intro">Log/History</h2>
           <div class="table-container">
-            <table>
-              <tbody>
-                  <!-- Add rows dynamically using JavaScript or server-side code -->
-    
-              </tbody>
-            </table>
-
-            
+            <div id="log-table" class="table">
+            </div>
           </div>
 
           <button class="download-copy">
@@ -81,19 +75,36 @@
             </span>
             Download Copy
           </button>
-          
+
         </div>
-        
-
       </section>
-
-
-
     </main>
-    
-    <script src="static\scripts\table.js"></script>
 
+    <script src="static/scripts/table.js"></script>
+    <script src="static/scripts/rect_canvas.js"></script>
+    <script src="static/scripts/video.js"></script>
+    <script src="static/scripts/socket.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          // play a file or webcam stream (0 for webcam)
+          videoCapture('{{source}}');
 
+          // start sending frames to the server every 50ms
+          setInterval(() => {
+            if (!isConnected()) {
+              clearCanvas();
+              return;
+            }
+            const image = snapshotVideo();
+            sendCommand('analyze', { image });
+          }, 50);
+        });
+
+        // close the connection when the page is closed
+        window.onunload = () => {
+          closeConnection();
+        }
+    </script>
 
   </body>
 

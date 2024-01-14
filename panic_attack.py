@@ -1,6 +1,4 @@
 import time
-from flask import current_app, jsonify
-from helpers import update_html_content
 
 # Initialize panic attack variables
 recurrence_count = 0
@@ -11,7 +9,7 @@ last_emotion_time = time.time()
 valence_ranges = [(-0.8, -0.61), (-0.6, -0.01), (0.0, 0.59), (0.6, 0.8)]
 arousal_range = (0.6, 0.8)
 
-def classify_panic_attack(valence, arousal):
+def classify_panic_attack(valence: float, arousal: float):
     global recurrence_count, is_panic_attack, last_emotion_time
 
     # Check if the emotion falls into the specified range
@@ -23,23 +21,16 @@ def classify_panic_attack(valence, arousal):
     # Check if recurrence count reaches 5
     if recurrence_count == 5:
         is_panic_attack = True
-        timestamp = time.strftime("%H:%M:%S", time.localtime())
-        return update_html_content(timestamp, "Panic attack precursor detected!")
+        return "Panic attack precursor detected!"
 
     # Check if recurrence count is beyond 5
     elif recurrence_count > 5:
-        timestamp = time.strftime("%H:%M:%S", time.localtime())
-        return update_html_content(timestamp, "Potential panic attack emotion is recurring. You might want to take action")
+        return "Potential panic attack emotion is recurring. You might want to take action"
 
     # Check if the emotion hasn't changed for 1 minute and 30 seconds
     current_time = time.time()
     if current_time - last_emotion_time >= 90:  # Check every 1 minute and 30 seconds
-        timestamp = time.strftime("%H:%M:%S", time.localtime())
-        return update_html_content(timestamp, "Potential panic attack emotion is not changing. You might want to take action.")
+        return "Potential panic attack emotion is not changing. You might want to take action."
+
     last_emotion_time = current_time
-    return update_html_content(timestamp, "Panic attack precursor detected!")
-
-
-def update_html_content(timestamp, message):
-    # Use jsonify within a request context
-    return jsonify({'timestamp': timestamp, 'message': message})
+    return "Panic attack precursor detected!"
