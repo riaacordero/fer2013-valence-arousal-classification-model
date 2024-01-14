@@ -33,4 +33,4 @@ def classify_panic_attack(valence: float, arousal: float):
         return "Potential panic attack emotion is not changing. You might want to take action."
 
     last_emotion_time = current_time
-    return "Panic attack precursor detected!"
+    return None

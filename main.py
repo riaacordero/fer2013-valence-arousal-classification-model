@@ -52,7 +52,7 @@ async def analyze(websocket: WebSocket, command: str, params: dict):
                 'timestamp': strftime("%H:%M:%S", localtime()),
                 'valence': valence.item(),
                 'arousal': arousal.item(),
-                'result': result,
+                'result': result if result is not None else '',
                 'bbox': [int(x), int(y), int(w), int(h)]
             }
         })
