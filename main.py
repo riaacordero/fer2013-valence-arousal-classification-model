@@ -30,7 +30,7 @@ async def index(request: Request):
     source = request.query_params.get('source', '0')
     # play a file from /test_files/test_video/bbc_news.mp4
     # http://localhost:3000/?source=/test_files/test_video/bbc_news.mp4
-    # or use the webcam (0)
+    # or use the webcam ('0')
     # http://localhost:3000/?source=0 (default)
     print(source)
     return templates.TemplateResponse(
