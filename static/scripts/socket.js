@@ -10,7 +10,7 @@ ws.onmessage = function (event) {
 
             // draw bounding box
             clearCanvas();
-            renderBoundingBox(result.bbox, result.valence, result.arousal);
+            renderBoundingBox(result.bbox, result.valence, result.arousal, result.emotion);
         }
     } else if (data.message) {
         console.log(data.type, data.message);

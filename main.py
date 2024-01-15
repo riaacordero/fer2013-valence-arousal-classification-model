@@ -45,13 +45,14 @@ async def analyze(websocket: WebSocket, command: str, params: dict):
 
     for face, x, y, w, h in detect_face(img):
         has_results = True
-        valence, arousal, result = predict_from_img(face)
+        valence, arousal, emotion, result = predict_from_img(face)
         await websocket.send_json({
             'command': command,
             'result': {
                 'timestamp': strftime("%H:%M:%S", localtime()),
                 'valence': valence.item(),
                 'arousal': arousal.item(),
+                'emotion': emotion if emotion is not None else 'unknown',
                 'result': result if result is not None else '',
                 'bbox': [int(x), int(y), int(w), int(h)]
             }
@@ -64,6 +65,7 @@ async def analyze(websocket: WebSocket, command: str, params: dict):
                 'timestamp': strftime("%H:%M:%S", localtime()),
                 'valence': 0,
                 'arousal': 0,
+                'emotion': 'unknown',
                 'bbox': [0,0,0,0]
             }
         })
