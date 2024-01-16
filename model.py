@@ -1,4 +1,3 @@
-from tensorflow import keras as keras
 from keras.models import model_from_json
 
 class FacialExpressionModel(object):
