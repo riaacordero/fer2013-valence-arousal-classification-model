@@ -43,5 +43,5 @@ function videoCapture(source) {
 }
 
 function snapshotVideo() {
-    return videoCanvas.toDataURL('image/jpeg', 0.75);
+    return videoCanvas.toDataURL('image/jpeg', 0.8);
 }
