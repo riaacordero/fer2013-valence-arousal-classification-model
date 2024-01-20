@@ -98,6 +98,8 @@ async def session(websocket: WebSocket):
                     await analyze_task
                 except asyncio.CancelledError:
                     await websocket.send_json({'type': 'info', 'message': 'Analysis cancelled'})
+            case 'reset_analyze':
+                panic_attack_classifier.reset()
             case 'close':
                 await websocket.send_json({'type': 'info', 'message': 'Closing connection'})
                 await websocket.close()

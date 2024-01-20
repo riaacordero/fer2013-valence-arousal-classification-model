@@ -20,14 +20,14 @@
     <h2 class="intro">Welcome to PSYMed!</h2>
     <main class="container">
       <section class="container__left">
-        
+
         <form class="container__flex-intro" action="/uploadvideo/" method="post" enctype="multipart/form-data">
           <div class="container__flex-inside">
             <h6>You may also upload a video footage instead of using the live camera.</h6>
             <input type="file" name="file" class="input_style" >
-            
+
           </div>
-        
+
           <button class="upload-video button-style" type="submit">
             Upload Video
           </button>
@@ -43,17 +43,17 @@
               photo_camera
               </span>
             </button>
-  
+
             <button id="playPauseButton" class="screen-record three-buttons">
               <span class="material-symbols-outlined">
                 play_arrow
               </span>
             </button>
-  
+
           </div>
         </div>
 
-        
+
       </div>
       </section>
 
@@ -114,16 +114,55 @@
           videoCapture('{{source}}');
 
           // start sending frames to the server every 50ms
-          setInterval(() => {
-            if (!isConnected()) {
-              clearCanvas();
-              return;
-            }
-            const image = snapshotVideo();
-            if (!videoStream.paused) {
-              sendCommand('analyze', { image });
-            }
-          }, 50);
+          var started = false;
+          var lastTimeMs = 0;
+
+          videoStream.addEventListener('play', () => {
+              function step() {
+                if (!isConnected()) {
+                  requestAnimationFrame(step);
+                  return;
+                }
+
+                // reset the analysis when the video is played at the beginning
+                var currentTimeMs = Math.floor(videoStream.currentTime * 1000);
+                if (started && currentTimeMs - lastTimeMs < 0) {
+                    started = false;
+                    lastTimeMs = 0;
+                    sendCommand('reset_analyze', {});
+                } else if (!started) {
+                    // flip the switch to start sending frames
+                    started = true;
+                }
+
+                // Do not analyze if the video is paused or if the duration is not yet known
+                if (!videoStream.paused && !isNaN(videoStream.duration)) {
+                    var shouldCapture = false;
+                    var diff = currentTimeMs - lastTimeMs;
+
+                    // check if lastTimeMs is zero or diff is greater than 50 milliseconds
+                    if (lastTimeMs == 0 || diff >= 50) {
+                      // only capture if the video is playing
+                      if (diff >= 50) {
+                        shouldCapture = true;
+                      }
+
+                      lastTimeMs = currentTimeMs;
+                    }
+
+                    // check if lastTimeMs reached 50 milliseconds, record and capture the frame
+                    if (shouldCapture) {
+                      // record last time
+                      const image = snapshotVideo();
+                      sendCommand('analyze', { image, timestamp: Date.now() });
+                    }
+                }
+
+                requestAnimationFrame(step);
+              }
+
+              requestAnimationFrame(step);
+          });
         });
 
         // close the connection when the page is closed
