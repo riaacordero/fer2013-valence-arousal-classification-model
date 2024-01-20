@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 
 from emotion_mapping import map_emotion
-from panic_attack import classify_panic_attack
+from panic_attack import PanicAttackClassifier
 
 facec = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
 model = FacialExpressionModel("model.json", "model_weights.h5")
@@ -38,7 +38,7 @@ def detect_face(frame: cv2.typing.MatLike):
         # Return the ROI and the coordinates of the face
         yield (roi, x, y, w, h)
 
-def predict_from_img(img):
+def predict_from_img(classifier: PanicAttackClassifier, img: cv2.typing.MatLike, timestamp: int):
     valence, arousal = model.predict_emotion(img)
     val, arou = valence, arousal
     if type(valence) == np.float64:
@@ -46,5 +46,5 @@ def predict_from_img(img):
     if type(arousal) == np.float64:
         arou = arousal.item()
     emotion = map_emotion(val, arou)
-    result = classify_panic_attack(val, arou)
+    result = classifier.classify(val, arou, timestamp)
     return (valence, arousal, emotion, result)

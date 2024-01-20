@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from camera import detect_face, predict_from_img
 from time import strftime, localtime
+from panic_attack import PanicAttackClassifier
 import asyncio
 import base64
 import numpy as np
@@ -37,7 +38,8 @@ async def index(request: Request):
         request=request, name='index.html', context={'source': source}
     )
 
-async def analyze(websocket: WebSocket, command: str, params: dict):
+async def analyze(classifier: PanicAttackClassifier, websocket: WebSocket, command: str, params: dict):
+    timestamp = params.get('timestamp')
     decoded_img = base64.b64decode(params.get('image').split(',')[1])
     img_arr = np.frombuffer(decoded_img, dtype=np.uint8)
     img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
@@ -45,7 +47,7 @@ async def analyze(websocket: WebSocket, command: str, params: dict):
 
     for face, x, y, w, h in detect_face(img):
         has_results = True
-        valence, arousal, emotion, result = predict_from_img(face)
+        valence, arousal, emotion, result = predict_from_img(classifier, face, timestamp)
         await websocket.send_json({
             'command': command,
             'result': {
@@ -75,6 +77,7 @@ async def session(websocket: WebSocket):
     await websocket.accept()
 
     analyze_task = None
+    panic_attack_classifier = PanicAttackClassifier()
 
     while True:
         data = await websocket.receive_json()
@@ -91,7 +94,7 @@ async def session(websocket: WebSocket):
                     if analyze_task is not None and not analyze_task.done():
                         analyze_task.cancel()
 
-                    analyze_task = asyncio.create_task(analyze(websocket, command, params))
+                    analyze_task = asyncio.create_task(analyze(panic_attack_classifier, websocket, command, params))
                     await analyze_task
                 except asyncio.CancelledError:
                     await websocket.send_json({'type': 'info', 'message': 'Analysis cancelled'})
