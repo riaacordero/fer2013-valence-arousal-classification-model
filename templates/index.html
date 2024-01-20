@@ -120,7 +120,9 @@
               return;
             }
             const image = snapshotVideo();
-            sendCommand('analyze', { image });
+            if (!videoStream.paused) {
+              sendCommand('analyze', { image });
+            }
           }, 50);
         });
 
