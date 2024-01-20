@@ -40,6 +40,7 @@ async def index(request: Request):
 
 async def analyze(classifier: PanicAttackClassifier, websocket: WebSocket, command: str, params: dict):
     timestamp = params.get('timestamp')
+    # captured = params.get('captured')
     decoded_img = base64.b64decode(params.get('image').split(',')[1])
     img_arr = np.frombuffer(decoded_img, dtype=np.uint8)
     img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
