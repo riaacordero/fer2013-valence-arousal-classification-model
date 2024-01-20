@@ -109,9 +109,12 @@
     <script src="static/scripts/video.js"></script>
     <script src="static/scripts/socket.js"></script>
     <script>
+        var source = '{{source}}';
+        var isCamera = source == '0';
+
         document.addEventListener('DOMContentLoaded', () => {
           // play a file or webcam stream (0 for webcam)
-          videoCapture('{{source}}');
+          videoCapture(source);
 
           // start sending frames to the server every 50ms
           var started = false;
@@ -154,7 +157,12 @@
                     if (shouldCapture) {
                       // record last time
                       const image = snapshotVideo();
-                      sendCommand('analyze', { image, timestamp: Date.now() });
+                      const captured = Date.now();
+                      sendCommand('analyze', {
+                        image,
+                        captured,
+                        timestamp: isCamera ? captured : currentTimeMs
+                      });
                     }
                 }
 
