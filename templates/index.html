@@ -20,20 +20,41 @@
     <h2 class="intro">Welcome to PSYMed!</h2>
     <main class="container">
       <section class="container__left">
-        <div class="container__flex-intro">
-          <h6>You may also upload a video footage instead of using the live camera.</h6>
-          <button class="upload-video">
-            <span class="material-symbols-outlined">
-              add
-            </span>
+        
+        <form class="container__flex-intro" action="/uploadvideo/" method="post" enctype="multipart/form-data">
+          <div class="container__flex-inside">
+            <h6>You may also upload a video footage instead of using the live camera.</h6>
+            <input type="file" name="file" class="input_style" >
+            
+          </div>
+        
+          <button class="upload-video button-style" type="submit">
             Upload Video
           </button>
-        </div>
+        </form>
 
         <div class="container__webcam" style="position: relative">
           <canvas style="position:absolute;top:0;left:0" id="rect" class="img-size" width="848" height="480"></canvas>
           <canvas id="video" class="img-size" width="848" height="480"></canvas>
+
+          <div class="button-div">
+            <button id="captureButton" class="screen-capture three-buttons">
+              <span class="material-symbols-outlined">
+              photo_camera
+              </span>
+            </button>
+  
+            <button id="playPauseButton" class="screen-record three-buttons">
+              <span class="material-symbols-outlined">
+                play_arrow
+              </span>
+            </button>
+  
+          </div>
         </div>
+
+        
+      </div>
       </section>
 
       <section class="container__right">
@@ -69,7 +90,7 @@
             </div>
           </div>
 
-          <button class="download-copy">
+          <button class="download-copy button-style">
             <span class="material-symbols-outlined">
               download
             </span>
