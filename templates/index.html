@@ -116,10 +116,11 @@
           // play a file or webcam stream (0 for webcam)
           videoCapture(source);
 
-          // start sending frames to the server every 50ms
           var started = false;
           var lastTimeMs = 0;
+          var msThreshold = 50;
 
+          // start sending frames to the server every $msThreshold ms
           videoStream.addEventListener('play', () => {
               function step() {
                 if (!isConnected()) {
@@ -129,7 +130,9 @@
 
                 // reset the analysis when the video is played at the beginning
                 var currentTimeMs = Math.floor(videoStream.currentTime * 1000);
-                if (started && currentTimeMs - lastTimeMs < 0) {
+                var diff = currentTimeMs - lastTimeMs;
+
+                if (started && diff < 0) {
                     started = false;
                     lastTimeMs = 0;
                     sendCommand('reset_analyze', {});
@@ -141,19 +144,18 @@
                 // Do not analyze if the video is paused or if the duration is not yet known
                 if (!videoStream.paused && !isNaN(videoStream.duration)) {
                     var shouldCapture = false;
-                    var diff = currentTimeMs - lastTimeMs;
 
-                    // check if lastTimeMs is zero or diff is greater than 50 milliseconds
-                    if (lastTimeMs == 0 || diff >= 50) {
+                    // check if lastTimeMs is zero or diff is greater than $msThreshold milliseconds
+                    if (lastTimeMs == 0 || diff >= msThreshold) {
                       // only capture if the video is playing
-                      if (diff >= 50) {
+                      if (diff >= msThreshold) {
                         shouldCapture = true;
                       }
 
                       lastTimeMs = currentTimeMs;
                     }
 
-                    // check if lastTimeMs reached 50 milliseconds, record and capture the frame
+                    // check if lastTimeMs reached $msThreshold milliseconds, record and capture the frame
                     if (shouldCapture) {
                       // record last time
                       const image = snapshotVideo();
