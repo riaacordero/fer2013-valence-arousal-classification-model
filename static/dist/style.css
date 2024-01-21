@@ -96,9 +96,22 @@ ul {
   background-color: #E8E8E8;
   cursor: pointer;
 }
+.container .three-buttons:hover {
+  background-color: #dbdada;
+  transform: scale(1.05);
+}
 .container .three-buttons .material-symbols-outlined {
   color: #515151;
   font-variation-settings: "FILL" 1;
+}
+.container #uploadButton {
+  background: linear-gradient(45deg, rgb(4, 220, 91) 0%, rgb(6, 221, 169) 100%);
+  color: white;
+}
+.container #uploadButton:disabled {
+  /* The color of the button when it's disabled */
+  background: #dad9d9;
+  color: #c0bfbf;
 }
 .container__flex-intro {
   display: flex;
