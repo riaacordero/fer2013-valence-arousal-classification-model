@@ -120,7 +120,7 @@
 
           var started = false;
           var lastTimeMs = 0;
-          var msThreshold = 500;
+          var msThreshold = 300;    // adjust this to change the frequency of frames sent to the servers
 
           // start sending frames to the server every $msThreshold ms
           videoStream.addEventListener('play', () => {

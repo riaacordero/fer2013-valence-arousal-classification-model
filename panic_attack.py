@@ -69,7 +69,7 @@ class PanicAttackClassifier:
                 return format_log(valence, arousal, "Panic attack emotion has reached its 10-minute limit. You might want to take action.")
 
             # Check if it's been 30 seconds since the last emotion change and the message hasn't been displayed
-            if diff >= in_ms(30) and not self.precursor_detected_flag:
+            if diff >= in_ms(15) and not self.precursor_detected_flag:
                 self.precursor_detected_flag = True
                 return format_log(valence, arousal, "Potential panic attack precursor detected!")
 
