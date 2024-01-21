@@ -6,11 +6,11 @@ ws.onmessage = function (event) {
         const result = data.result;
         if (data.command === 'analyze') {
             // log result
-            logItem(result.timestamp, result.result);
+            logItem(result);
 
             // draw bounding box
             clearCanvas();
-            renderBoundingBox(result.bbox, result.valence, result.arousal, result.emotion);
+            renderBoundingBox2(result.bbox, result.valence, result.arousal, result.emotion);
         }
     } else if (data.message) {
         console.log(data.type, data.message);

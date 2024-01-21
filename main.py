@@ -52,7 +52,7 @@ async def index(request: Request):
 @app.post("/uploadvideo/")
 async def upload_video(file: UploadFile = File(...)):
     #checks if the file has been received
-    print(f"Received file: {file.filename}") 
+    print(f"Received file: {file.filename}")
 
     #writes the file to the test_files/test_video folder
     with open(f"test_files/test_video/{file.filename}", "wb") as buffer:
@@ -64,7 +64,7 @@ async def upload_video(file: UploadFile = File(...)):
 
         #writes the contents of the uploaded file to the new file
         buffer.write(contents)
-        
+
     return {"filename": file.filename}
 
 
@@ -86,6 +86,7 @@ async def analyze(classifier: PanicAttackClassifier, websocket: WebSocket, comma
                 'valence': valence.item(),
                 'arousal': arousal.item(),
                 'emotion': emotion if emotion is not None else 'unknown',
+                'image': params.get('image'),
                 'result': result if result is not None else '',
                 'bbox': [int(x), int(y), int(w), int(h)]
             }
