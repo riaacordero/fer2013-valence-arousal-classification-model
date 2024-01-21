@@ -79,6 +79,6 @@ p {
 }
 
 .table .table-entry div:last-child {
-    // 2/3 of the width
+    /* 2/3 of the width */
     width: calc(200% / 3);
 }
