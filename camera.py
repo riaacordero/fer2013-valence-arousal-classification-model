@@ -46,5 +46,5 @@ def predict_from_img(classifier: PanicAttackClassifier, img: cv2.typing.MatLike,
     if type(arousal) == np.float64:
         arou = arousal.item()
     emotion = map_emotion(val, arou)
-    result = classifier.classify(val, arou, timestamp)
+    result = classifier.classify(emotion, val, arou, timestamp)
     return (valence, arousal, emotion, result)

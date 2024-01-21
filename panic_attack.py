@@ -2,24 +2,13 @@
 valence_ranges = [(-0.8, -0.61), (-0.6, -0.01), (0.0, 0.59), (0.6, 0.8)]
 arousal_range = (-0.6, 0.6, 0.8)
 
-def _in_emotion_range(valence: float, arousal: float) -> bool:
+def _in_emotion_range(emotion: str | None) -> bool:
     """
-    Checks if the valence and arousal values fall into the specified range
-    :param valence: The valence value
-    :param arousal: The arousal value
-    :return: True if the valence and arousal values fall into the specified range, False otherwise
+    Checks if the emotion is within the specified range
+    :param emotion: The emotion
+    :return: True if the emotion is within the specified range, False otherwise
     """
-
-    # Check if the valence value falls into the specified range
-    for val_range in valence_ranges:
-        if val_range[0] <= valence <= val_range[1]:
-            # Proceed to check the arousal range
-            break
-        else:
-            return False
-
-    # Check if the arousal value falls into the specified range
-    return arousal_range[0] <= arousal <= arousal_range[2]
+    return emotion == "anger" or emotion == "fear" or emotion == "sadness" or emotion == "disgust"
 
 def format_log(val, arou, message):
     return f"Valence: {val:.2f}, Arousal: {arou:.2f}, {message}"
@@ -55,7 +44,7 @@ class PanicAttackClassifier:
         self.precursor_detected_flag = False
         self.limit_10min_flag = False
 
-    def classify(self, valence: float, arousal: float, current_time: float):
+    def classify(self, emotion: str | None, valence: float, arousal: float, current_time: float):
         if self.last_emotion_time != 0 and current_time < self.last_emotion_time:
             # raise ValueError("Current time cannot be less than the last emotion time")
             return None
@@ -69,7 +58,7 @@ class PanicAttackClassifier:
         diff = self.diff(current_time)
 
         # Check if the emotion falls into the specified range
-        is_in_panic_attack_emotion = _in_emotion_range(valence, arousal)
+        is_in_panic_attack_emotion = _in_emotion_range(emotion)
         print(f"diff: {diff:.2f}ms | in_panic_attack_emotion: {is_in_panic_attack_emotion}")
 
         if is_in_panic_attack_emotion:
