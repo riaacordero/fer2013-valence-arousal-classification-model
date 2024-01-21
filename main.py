@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request, WebSocket, UploadFile, File
 from fastapi.responses import HTMLResponse
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -33,10 +33,40 @@ async def index(request: Request):
     # http://localhost:3000/?source=/test_files/test_video/bbc_news.mp4
     # or use the webcam ('0')
     # http://localhost:3000/?source=0 (default)
+
     print(source)
     return templates.TemplateResponse(
         request=request, name='index.html', context={'source': source}
     )
+
+    #code for uploading the video file and playing it to the browser
+#     source = request.query_params.get('source', '0')
+#     uploaded_file = request.query_params.get('uploaded_file')
+#     if uploaded_file:
+#         source = f"/test_files/test_video/{uploaded_file}"
+#     print(source)
+#     return templates.TemplateResponse(
+#         request=request, name='index.html', context={'source': source}
+#     )
+
+# @app.post("/uploadvideo/")
+# async def upload_video(file: UploadFile = File(...)):
+#     #checks if the file has been received
+#     print(f"Received file: {file.filename}") 
+
+#     #writes the file to the test_files/test_video folder
+#     with open(f"test_files/test_video/{file.filename}", "wb") as buffer:
+#         #reads the file into memory
+#         contents = await file.read()
+
+#         #prints the file size
+#         print(f"File size: {len(contents)} bytes")
+
+#         #writes the contents of the uploaded file to the new file
+#         buffer.write(contents)
+        
+#     return {"filename": file.filename}
+
 
 async def analyze(classifier: PanicAttackClassifier, websocket: WebSocket, command: str, params: dict):
     timestamp = params.get('timestamp')
