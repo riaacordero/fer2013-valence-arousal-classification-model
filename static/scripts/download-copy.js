@@ -14,7 +14,7 @@ downloadButton.addEventListener('click', function() {
         }
 
         // add image url
-        row.push(rows[i].dataset.imageUrl)
+        // row.push(rows[i].dataset.imageUrl)
 
         if (row.length === 0) {
             // do not include empty row!
