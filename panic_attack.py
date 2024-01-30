@@ -68,6 +68,7 @@ class PanicAttackClassifier:
         print(f"diff: {diff:.2f}ms | in_panic_attack_emotion: {is_in_panic_attack_emotion} | panic_timeframe: {self.panic_timeframe_ms}")
 
         if is_in_panic_attack_emotion:
+            self.false_emotions_count = 0
             if self.panic_timeframe_ms == 0:
                 # Set the last emotion time once if within panic attack emotion
                 self.last_emotion_time = current_time
