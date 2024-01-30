@@ -92,7 +92,7 @@ class PanicAttackClassifier:
             # Increase false emotions count
             self.false_emotions_count += 1
             
-            if self.false_emotions_count == 5:
+            if self.false_emotions_count == 10:
                 # Change last emotion time if the emotion is not in the specified range
                 # Do not change every time. Only reset if panic_timeframe_ms is not 0
                 self.last_emotion_time = current_time
