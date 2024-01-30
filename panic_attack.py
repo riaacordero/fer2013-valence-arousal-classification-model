@@ -30,6 +30,7 @@ class PanicAttackClassifier:
     limit_10min_flag = False
     panic_timeframe_ms = 0
     last_frame_time = 0
+    false_emotions_count = 0
 
     def __init__(self):
         pass
@@ -47,6 +48,7 @@ class PanicAttackClassifier:
         self.limit_10min_flag = False
         self.panic_timeframe_ms = 0
         self.last_frame_time = 0
+        self.false_emotions_count = 0
 
     def classify(self, emotion: str | None, valence: float, arousal: float, current_time: float):
         if self.last_emotion_time != 0 and current_time < self.last_emotion_time:
@@ -86,14 +88,19 @@ class PanicAttackClassifier:
                 self.precursor_detected_flag = True
                 self.last_frame_time = current_time
                 return format_log(valence, arousal, "Potential panic attack precursor detected!")
-        else:
-            if self.panic_timeframe_ms != 0:
+        elif self.panic_timeframe_ms != 0:
+            # Increase false emotions count
+            self.false_emotions_count += 1
+            
+            if self.false_emotions_count == 5:
                 # Change last emotion time if the emotion is not in the specified range
                 # Do not change every time. Only reset if panic_timeframe_ms is not 0
                 self.last_emotion_time = current_time
-
-            # Reset panic timeframe if the emotion is not in the specified range
-            self.panic_timeframe_ms = 0
+                
+                # Reset panic timeframe if the emotion is not in the specified range
+                self.panic_timeframe_ms = 0
+                self.false_emotions_count = 0
+                
 
         # Reset flags if a new emotion is detected
         if self.precursor_detected_flag or self.limit_10min_flag:
