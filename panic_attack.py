@@ -28,6 +28,8 @@ class PanicAttackClassifier:
     last_emotion_time = 0
     precursor_detected_flag = False
     limit_10min_flag = False
+    panic_timeframe_ms = 0
+    last_frame_time = 0
 
     def __init__(self):
         pass
@@ -43,6 +45,8 @@ class PanicAttackClassifier:
         self.last_emotion_time = 0
         self.precursor_detected_flag = False
         self.limit_10min_flag = False
+        self.panic_timeframe_ms = 0
+        self.last_frame_time = 0
 
     def classify(self, emotion: str | None, valence: float, arousal: float, current_time: float):
         if self.last_emotion_time != 0 and current_time < self.last_emotion_time:
@@ -59,27 +63,42 @@ class PanicAttackClassifier:
 
         # Check if the emotion falls into the specified range
         is_in_panic_attack_emotion = _in_emotion_range(emotion)
-        print(f"diff: {diff:.2f}ms | in_panic_attack_emotion: {is_in_panic_attack_emotion}")
+        print(f"diff: {diff:.2f}ms | in_panic_attack_emotion: {is_in_panic_attack_emotion} | panic_timeframe: {self.panic_timeframe_ms}")
 
         if is_in_panic_attack_emotion:
+            if self.panic_timeframe_ms == 0:
+                # Set the last emotion time once if within panic attack emotion
+                self.last_emotion_time = current_time
+
+            gap = current_time - self.last_frame_time
+            self.panic_timeframe_ms += gap
+
             # Check if it's been 10 minutes since the last emotion change and the message hasn't been displayed
             if diff >= in_ms(10 * 60) and not self.limit_10min_flag:
                 self.is_panic_attack = True
                 self.limit_10min_flag = True
+
+                self.last_frame_time = current_time
                 return format_log(valence, arousal, "Panic attack emotion has reached its 10-minute limit. You might want to take action.")
 
             # Check if it's been 30 seconds since the last emotion change and the message hasn't been displayed
-            if diff >= in_ms(15) and not self.precursor_detected_flag:
+            if self.panic_timeframe_ms >= in_ms(15) and not self.precursor_detected_flag:
                 self.precursor_detected_flag = True
+                self.last_frame_time = current_time
                 return format_log(valence, arousal, "Potential panic attack precursor detected!")
+        else:
+            if self.panic_timeframe_ms != 0:
+                # Change last emotion time if the emotion is not in the specified range
+                # Do not change every time. Only reset if panic_timeframe_ms is not 0
+                self.last_emotion_time = current_time
+
+            # Reset panic timeframe if the emotion is not in the specified range
+            self.panic_timeframe_ms = 0
 
         # Reset flags if a new emotion is detected
         if self.precursor_detected_flag or self.limit_10min_flag:
             self.precursor_detected_flag = False
             self.limit_10min_flag = False
 
-        # Check if it's been 30 seconds since the last emotion change and the message hasn't been displayed
-        if diff >= in_ms(30):
-            self.last_emotion_time = current_time
-
+        self.last_frame_time = current_time
         return None
