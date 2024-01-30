@@ -8,7 +8,7 @@ def _in_emotion_range(emotion: str | None) -> bool:
     :param emotion: The emotion
     :return: True if the emotion is within the specified range, False otherwise
     """
-    return emotion == "anger" or emotion == "fear" or emotion == "sad"
+    return emotion == "angry" or emotion == "fear" or emotion == "sad"
 
 def format_log(val, arou, message):
     return f"Valence: {val:.2f}, Arousal: {arou:.2f}, {message}"
